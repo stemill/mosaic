@@ -7,6 +7,13 @@ import org.apache.spark.sql.types.DataType
 
 object GeometryTransformationsCodeGen {
 
+    def simplify(ctx: CodegenContext, geomEval: String, toleranceEval: String, dataType: DataType, geometryAPI: GeometryAPI): (String, String) = {
+        geometryAPI.name match {
+            case "ESRI" => GeometryTransformationsCodeGenESRI.rotate(ctx, geomEval, toleranceEval, dataType, geometryAPI)
+            case "JTS" => GeometryTransformationsCodeGenJTS.rotate(ctx, geomEval, toleranceEval, dataType, geometryAPI)
+        }
+    }
+
     def rotate(ctx: CodegenContext, geomEval: String, angleEval: String, dataType: DataType, geometryAPI: GeometryAPI): (String, String) = {
         geometryAPI.name match {
             case "ESRI" => GeometryTransformationsCodeGenESRI.rotate(ctx, geomEval, angleEval, dataType, geometryAPI)

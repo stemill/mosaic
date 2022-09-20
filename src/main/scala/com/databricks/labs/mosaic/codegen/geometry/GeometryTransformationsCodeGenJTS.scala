@@ -10,6 +10,22 @@ import org.apache.spark.sql.types.DataType
 
 object GeometryTransformationsCodeGenJTS {
 
+    def simplify(ctx: CodegenContext, geomEval: String, toleranceEval: String, dataType: DataType, geometryAPI: GeometryAPI): (String, String) = {
+        val (inCode, geomInRef) = ConvertToCodeGen.readGeometryCode(ctx, geomEval, dataType, geometryAPI)
+        val tmpGeom = ctx.freshName("tmpGeom")
+        val (outCode, geomOutRef) = ConvertToCodeGen.writeGeometryCode(ctx, tmpGeom, dataType, geometryAPI)
+        val jtsGeometryClass = classOf[Geometry].getName
+        val mosaicGeometryJTSClass = classOf[MosaicGeometryJTS].getName
+        (
+          s"""
+             |$inCode
+             |$jtsGeometryClass $tmpGeom = (($mosaicGeometryJTSClass)$mosaicGeometryJTSClass.apply($geomInRef).rotate($toleranceEval)).getGeom();
+             |$outCode
+             |""".stripMargin,
+          geomOutRef
+        )
+    }
+
     def rotate(ctx: CodegenContext, geomEval: String, angleEval: String, dataType: DataType, geometryAPI: GeometryAPI): (String, String) = {
         val (inCode, geomInRef) = ConvertToCodeGen.readGeometryCode(ctx, geomEval, dataType, geometryAPI)
         val tmpGeom = ctx.freshName("tmpGeom")

@@ -235,6 +235,11 @@ class MosaicContext(indexSystem: IndexSystem, geometryAPI: GeometryAPI) extends 
           (exprs: Seq[Expression]) => ST_Rotate(exprs(0), exprs(1), geometryAPI.name)
         )
         registry.registerFunction(
+          FunctionIdentifier("st_simplify", database),
+          ST_Rotate.registryExpressionInfo(database, "st_simplify"),
+          (exprs: Seq[Expression]) => ST_Simplify(exprs(0), ColumnAdapter(exprs(1)).cast("double").expr, geometryAPI.name)
+        )
+        registry.registerFunction(
           FunctionIdentifier("st_convexhull", database),
           ST_ConvexHull.registryExpressionInfo(database),
           (exprs: Seq[Expression]) => ST_ConvexHull(exprs(0), geometryAPI.name)
@@ -258,6 +263,11 @@ class MosaicContext(indexSystem: IndexSystem, geometryAPI: GeometryAPI) extends 
           FunctionIdentifier("st_intersection", database),
           ST_Intersection.registryExpressionInfo(database),
           (exprs: Seq[Expression]) => ST_Intersection(exprs(0), exprs(1), geometryAPI.name)
+        )
+        registry.registerFunction(
+          FunctionIdentifier("st_difference", database),
+          ST_Difference.registryExpressionInfo(database),
+          (exprs: Seq[Expression]) => ST_Difference(exprs(0), exprs(1), geometryAPI.name)
         )
         registry.registerFunction(
           FunctionIdentifier("st_srid", database),

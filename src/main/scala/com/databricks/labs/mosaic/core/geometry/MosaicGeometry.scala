@@ -55,6 +55,8 @@ trait MosaicGeometry extends GeometryWriter with Serializable {
 
     def intersection(other: MosaicGeometry): MosaicGeometry
 
+    def difference(other: MosaicGeometry): MosaicGeometry
+
     def intersects(other: MosaicGeometry): Boolean
 
     def union(other: MosaicGeometry): MosaicGeometry

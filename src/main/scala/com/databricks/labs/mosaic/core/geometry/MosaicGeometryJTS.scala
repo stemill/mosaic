@@ -77,6 +77,13 @@ abstract class MosaicGeometryJTS(geom: Geometry) extends MosaicGeometry {
         MosaicGeometryJTS(intersection)
     }
 
+    override def difference(other: MosaicGeometry): MosaicGeometryJTS = {
+        val otherGeom = other.asInstanceOf[MosaicGeometryJTS].getGeom
+        val difference = this.geom.difference(otherGeom)
+        difference.setSRID(geom.getSRID)
+        MosaicGeometryJTS(difference)
+    }
+
     override def intersects(other: MosaicGeometry): Boolean = {
         val otherGeom = other.asInstanceOf[MosaicGeometryJTS].getGeom
         this.geom.intersects(otherGeom)

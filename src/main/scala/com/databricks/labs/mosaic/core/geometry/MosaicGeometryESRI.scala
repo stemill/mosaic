@@ -80,6 +80,19 @@ abstract class MosaicGeometryESRI(geom: OGCGeometry) extends MosaicGeometry {
         OGCGeometry.createFromEsriCursor(cursor, geom.getEsriSpatialReference, true)
     }
 
+    override def difference(other: MosaicGeometry): MosaicGeometry = {
+        val otherGeom = other.asInstanceOf[MosaicGeometryESRI].getGeom
+        MosaicGeometryESRI(difference(otherGeom))
+    }
+
+    private def difference(another: OGCGeometry): OGCGeometry = {
+        val op: OperatorDifference =
+            OperatorFactoryLocal.getInstance.getOperator(Operator.Type.Difference).asInstanceOf[OperatorDifference]
+        val cursor: GeometryCursor =
+            op.execute(geom.getEsriGeometryCursor, another.getEsriGeometryCursor, geom.getEsriSpatialReference, null)
+        OGCGeometry.createFromEsriCursor(cursor, geom.getEsriSpatialReference, true)
+    }
+
     override def intersects(other: MosaicGeometry): Boolean = {
         val otherGeom = other.asInstanceOf[MosaicGeometryESRI].getGeom
         this.geom.intersects(otherGeom)

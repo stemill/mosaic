@@ -25,12 +25,14 @@ __all__ = [
     "st_translate",
     "st_scale",
     "st_rotate",
+    "st_simplify",
     "st_centroid2D",
     "st_centroid3D",
     "st_numpoints",
     "st_isvalid",
     "st_distance",
     "st_intersection",
+    "st_difference",
     "st_geometrytype",
     "st_xmin",
     "st_xmax",
@@ -348,6 +350,27 @@ def st_rotate(geom: ColumnOrName, td: ColumnOrName) -> Column:
         "st_rotate", pyspark_to_java_column(geom), pyspark_to_java_column(td)
     )
 
+def st_simplify(geom: ColumnOrName, tolerance: ColumnOrName) -> Column:
+     """
+     Simplifies `geom` using the tolerance `tolerance`
+
+     Parameters
+     ----------
+     geom : Column
+         The input geometry
+     tolerance : Column (any numeric type)
+         Tolerance
+
+     Returns
+     -------
+     Column
+         The simplified geometry.
+
+     """
+     return config.mosaic_context.invoke_function(
+         "st_simplify", pyspark_to_java_column(geom), pyspark_to_java_column(tolerance)
+     )
+
 
 def st_centroid2D(geom: ColumnOrName) -> Column:
     """
@@ -478,6 +501,32 @@ def st_intersection(left_geom: ColumnOrName, right_geom: ColumnOrName) -> Column
         pyspark_to_java_column(right_geom),
     )
 
+def st_difference(left_geom: ColumnOrName, right_geom: ColumnOrName) -> Column:
+    """
+    Returns the geometry result of the difference between `left_geom` and `right_geom`.
+
+    Parameters
+    ----------
+    left_geom : Column
+    right_geom : Column
+
+    Returns
+    -------
+    Column
+        The difference geometry.
+
+    Notes
+    -----
+    The resulting geometry could give different results depending on the chosen
+    geometry API (ESRI or JTS), especially for polygons that are invalid based on
+    the choosen geometry API.
+
+    """
+    return config.mosaic_context.invoke_function(
+        "st_difference",
+        pyspark_to_java_column(left_geom),
+        pyspark_to_java_column(right_geom),
+    )
 
 def st_geometrytype(geom: ColumnOrName) -> Column:
     """
